@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>&#x8981;&#x6C42;&#x4ED5;&#x69D8;&#x66F8;</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="要求仕様書">要求仕様書</h1>
+<h2 id="システム概要">システム概要</h2>
+<h3 id="目的">目的</h3>
+<p>IoT各プラットフォームの死活監視を行っている正常性確認システムは、監視対象となるシステムごとにpython scriptがサービスとして起動されている。
+このpython scriptは監視対象を監視する際の通信間隔、タイムアウト、リトライ回数等の各パラメータをiniファイルとして別に保存している。</p>
+<p>IoTプラットフォームや監視パケット生成のシミュレータ等で仕様変更が発生した際、現運用では正常性確認システム開発担当においてパラメータの調整から本番環境のiniファイル変更まで行っており、開発担当者の負荷となっている。</p>
+<p>本番環境のパラメータ変更は、変更作業がコンソール画面での実ファイル置き換えという変更箇所が分かりづらく、また履歴が残らない方法であるため、開発担当以外で作業を行いづらいという背景がある。</p>
+<p>この変更作業を変更項目が分かりやすく、また作業履歴が残るようGUI化を行い、同作業を運用部門に移管することにより、開発担当者の負荷の軽減を図る。</p>
+<h2 id="システム構成">システム構成</h2>
+<h3 id="システム概念図">システム概念図</h3>
+<h3 id="業務フロー">業務フロー</h3>
+<pre><code class="language-mermaid"><code><div>sequenceDiagram
+    participant A as プラットフォーム各開発
+    participant B as 開発3課
+    participant C as ネットワーク運用本部
+
+    A-&gt;&gt;B: プラットフォーム仕様変更
+    Note over B: 検証
+    loop パラメータ調整
+        B--&gt;A: 仕様合意
+    end
+    B--&gt;&gt;C: パラメータ変更依頼
+    note over C: 設定変更
+</div></code></code></pre>
+<h3 id="ユースケース図">ユースケース図</h3>
+<pre><code class="language-puml"><code><div>@startuml
+left to right direction
+actor システム管理者 as A
+actor ユーザ管理者 as B
+actor 利用者 as C
+package パラメータGUI {
+    usecase &quot;スクリプトファイル登録&quot; as uc01
+    usecase &quot;ユーザ管理&quot; as uc02
+    usecase &quot;パラメータ参照&quot; as uc03
+    usecase &quot;パラメータ変更&quot; as uc04
+}
+A --&gt; uc01
+A --&gt; uc02
+A --&gt; uc03
+A --&gt; uc04
+B --&gt; uc02
+C --&gt; uc03
+C --&gt; uc04
+@enduml
+</div></code></code></pre>
+<h2 id="機能要件">機能要件</h2>
+<h3 id="機能一覧">機能一覧</h3>
+<h2 id="入出力要件">入出力要件</h2>
+<h3 id="入力データ一覧">入力データ一覧</h3>
+<h3 id="出力データ一覧">出力データ一覧</h3>
+<h2 id="非機能要件">非機能要件</h2>
+<h3 id="セキュリティ要件">セキュリティ要件</h3>
+<h3 id="品質性能要件">品質・性能要件</h3>
+
+    </body>
+    </html>

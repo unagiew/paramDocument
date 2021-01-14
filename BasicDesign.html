@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>&#x57FA;&#x672C;&#x8A2D;&#x8A08;&#x66F8;</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="基本設計書">基本設計書</h1>
+<h2 id="システム概要">システム概要</h2>
+<h3 id="シナリオ">シナリオ</h3>
+<h3 id="ビジネスロジック">ビジネスロジック</h3>
+<h3 id="業務フロー">業務フロー</h3>
+<pre><code class="language-mermaid"><code><div>sequenceDiagram
+    participant A as プラットフォーム各開発
+    participant B as 開発3課
+    participant C as ネットワーク運用本部
+
+    A-&gt;&gt;B: プラットフォーム仕様変更
+    Note over B: 検証
+    loop パラメータ調整
+        B--&gt;A: 仕様合意
+    end
+    B--&gt;&gt;C: パラメータ変更依頼
+    note over C: 設定変更
+
+</div></code></code></pre>
+<h2 id="システム構成">システム構成</h2>
+<h3 id="構成図">構成図</h3>
+<h3 id="ハードウェアソフトウェア構成図">ハードウェア、ソフトウェア構成図</h3>
+<h3 id="ネットワーク構成図">ネットワーク構成図</h3>
+<h2 id="機能一覧表">機能一覧表</h2>
+<h2 id="データベース仕様">データベース仕様</h2>
+<h3 id="er図">ER図</h3>
+<pre><code class="language-puml"><code><div>@startuml
+entity &quot;Account&quot; as e01 {
+    *id : bigint &lt;&lt;generated&gt;&gt;
+    *username : varchar
+    *displayname : varchart
+    *password : varchart
+    *enabled : boolean
+}
+
+entity &quot;AUTHORITIES&quot; as e02 {
+    *account_id : bigint
+    *authority : varchar
+}
+
+entity &quot;PARAMETER_OVERVIEW&quot; as e11 {
+    id : bigint &lt;&lt;generated&gt;&gt;
+    title : varchar
+    description : varchar
+    script_filename : varchar
+    ini_filename : varchar
+    design_doc : varchar
+    log_output : varchar
+    systemctl_name * varchar
+}
+
+entity &quot;INI_CONTENT&quot; as e12 {
+    id : bigint &lt;&lt;generated&gt;&gt;
+    overview_id : bigint
+    file_previous : clob
+    file_after : clog
+    create_by : varchar
+    create_timestamp : timestamp
+
+}
+
+entity &quot;OVERWRITE_HISTORY&quot; as e13 {
+    id : bigint &lt;&lt;generated&gt;&gt;
+    overview_id : bigint
+    file_previous : clob
+    file_after : clob
+    operator : varchar
+}
+
+e01 ||--|{ e02
+e11 ||--o| e12
+e11 ||--o{ e13
+
+@enduml
+</div></code></code></pre>
+<h3 id="テーブル定義">テーブル定義</h3>
+<h2 id="ui設計">UI設計</h2>
+<h3 id="画面遷移図">画面遷移図</h3>
+<pre><code class="language-mermaid"><code><div>graph LR;
+top(トップ)--&gt;ログイン認証;
+top--&gt;account(アカウント管理);
+account--&gt;myAccount(マイアカウント確認);
+account--&gt;accoutList(アカウントリスト);
+account--&gt;アカウント追加;
+myAccount--&gt;マイパスワード変更;
+accoutList--&gt;アカウント編集;
+accoutList--&gt;アカウント削除;
+
+top--&gt;parameter(パラメータ変更);
+parameter--&gt;parameterList(パラメータリスト);
+parameterList--&gt;parameterDetail(パラメータ詳細);
+parameterList--&gt;パラメータリスト追加;
+parameterList--&gt;parameterHistory(変更履歴);
+parameterDetail--&gt;パラメータ変更;
+parameterDetail--&gt;Diff確認/上書;
+parameterDetail--&gt;スクリプト再起動;
+parameterDetail--&gt;ログチェック;
+parameterDetail--&gt;showScript[/スクリプトファイル確認/];
+parameterDetail--&gt;showIni[/iniファイル確認/];
+parameterDetail--&gt;showDoc[/設計書確認/];
+</div></code></code></pre>
+<h3 id="画面レイアウト設計図">画面レイアウト設計図</h3>
+
+    </body>
+    </html>
