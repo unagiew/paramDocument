@@ -1,81 +1,396 @@
-<!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>&#x8981;&#x6C42;&#x4ED5;&#x69D8;&#x66F8;</title>
-        <style>
-</style>
-        
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
-<style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
-                font-size: 14px;
-                line-height: 1.6;
-            }
-        </style>
-        <style>
-.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
-</style>
-        
-        
-        
-    </head>
-    <body class="vscode-body vscode-light">
-        <h1 id="要求仕様書">要求仕様書</h1>
-<h2 id="システム概要">システム概要</h2>
-<h3 id="目的">目的</h3>
-<p>IoT各プラットフォームの死活監視を行っている正常性確認システムは、監視対象となるシステムごとにpython scriptがサービスとして起動されている。
-このpython scriptは監視対象を監視する際の通信間隔、タイムアウト、リトライ回数等の各パラメータをiniファイルとして別に保存している。</p>
-<p>IoTプラットフォームや監視パケット生成のシミュレータ等で仕様変更が発生した際、現運用では正常性確認システム開発担当においてパラメータの調整から本番環境のiniファイル変更まで行っており、開発担当者の負荷となっている。</p>
-<p>本番環境のパラメータ変更は、変更作業がコンソール画面での実ファイル置き換えという変更箇所が分かりづらく、また履歴が残らない方法であるため、開発担当以外で作業を行いづらいという背景がある。</p>
-<p>この変更作業を変更項目が分かりやすく、また作業履歴が残るようGUI化を行い、同作業を運用部門に移管することにより、開発担当者の負荷の軽減を図る。</p>
-<h2 id="システム構成">システム構成</h2>
-<h3 id="システム概念図">システム概念図</h3>
-<h3 id="業務フロー">業務フロー</h3>
-<pre><code class="language-mermaid"><code><div>sequenceDiagram
-    participant A as プラットフォーム各開発
-    participant B as 開発3課
-    participant C as ネットワーク運用本部
+<!DOCTYPE html><html><head>
+      <title>Requirement</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\aqua_\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.5.15\node_modules\@shd101wyy\mume\dependencies\katex\katex.min.css">
+      
+      
+      
+      <script type="text/javascript" src="file:///c:\Users\aqua_\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.5.15\node_modules\@shd101wyy\mume\dependencies\mermaid\mermaid.min.js" charset="UTF-8"></script>
+      
+      
+      
+      
+      
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
 
-    A-&gt;&gt;B: プラットフォーム仕様変更
-    Note over B: 検証
-    loop パラメータ調整
-        B--&gt;A: 仕様合意
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{padding:0 1.6em;margin-top:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li{margin-bottom:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{list-style-type:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  150px);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h1 class="mume-header" id="%E8%A6%81%E6%B1%82%E4%BB%95%E6%A7%98%E6%9B%B8">&#x8981;&#x6C42;&#x4ED5;&#x69D8;&#x66F8;</h1>
+
+<h2 class="mume-header" id="%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E6%A6%82%E8%A6%81">&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x6982;&#x8981;</h2>
+
+<h3 class="mume-header" id="%E7%9B%AE%E7%9A%84">&#x76EE;&#x7684;</h3>
+
+<p>IoT&#x5404;&#x30D7;&#x30E9;&#x30C3;&#x30C8;&#x30D5;&#x30A9;&#x30FC;&#x30E0;&#x306E;&#x6B7B;&#x6D3B;&#x76E3;&#x8996;&#x3092;&#x884C;&#x3063;&#x3066;&#x3044;&#x308B;&#x6B63;&#x5E38;&#x6027;&#x78BA;&#x8A8D;&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x306F;&#x3001;&#x76E3;&#x8996;&#x5BFE;&#x8C61;&#x3068;&#x306A;&#x308B;&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x3054;&#x3068;&#x306B;python script&#x304C;&#x30B5;&#x30FC;&#x30D3;&#x30B9;&#x3068;&#x3057;&#x3066;&#x8D77;&#x52D5;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x3002;<br>
+&#x3053;&#x306E;python script&#x306F;&#x76E3;&#x8996;&#x5BFE;&#x8C61;&#x3092;&#x76E3;&#x8996;&#x3059;&#x308B;&#x969B;&#x306E;&#x901A;&#x4FE1;&#x9593;&#x9694;&#x3001;&#x30BF;&#x30A4;&#x30E0;&#x30A2;&#x30A6;&#x30C8;&#x3001;&#x30EA;&#x30C8;&#x30E9;&#x30A4;&#x56DE;&#x6570;&#x7B49;&#x306E;&#x5404;&#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x3092;ini&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3068;&#x3057;&#x3066;&#x5225;&#x306B;&#x4FDD;&#x5B58;&#x3057;&#x3066;&#x3044;&#x308B;&#x3002;</p>
+<p>IoT&#x30D7;&#x30E9;&#x30C3;&#x30C8;&#x30D5;&#x30A9;&#x30FC;&#x30E0;&#x3084;&#x76E3;&#x8996;&#x30D1;&#x30B1;&#x30C3;&#x30C8;&#x751F;&#x6210;&#x306E;&#x30B7;&#x30DF;&#x30E5;&#x30EC;&#x30FC;&#x30BF;&#x7B49;&#x3067;&#x4ED5;&#x69D8;&#x5909;&#x66F4;&#x304C;&#x767A;&#x751F;&#x3057;&#x305F;&#x969B;&#x3001;&#x73FE;&#x904B;&#x7528;&#x3067;&#x306F;&#x6B63;&#x5E38;&#x6027;&#x78BA;&#x8A8D;&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x958B;&#x767A;&#x62C5;&#x5F53;&#x306B;&#x304A;&#x3044;&#x3066;&#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x306E;&#x8ABF;&#x6574;&#x304B;&#x3089;&#x672C;&#x756A;&#x74B0;&#x5883;&#x306E;ini&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x5909;&#x66F4;&#x307E;&#x3067;&#x884C;&#x3063;&#x3066;&#x304A;&#x308A;&#x3001;&#x958B;&#x767A;&#x62C5;&#x5F53;&#x8005;&#x306E;&#x8CA0;&#x8377;&#x3068;&#x306A;&#x3063;&#x3066;&#x3044;&#x308B;&#x3002;</p>
+<p>&#x672C;&#x756A;&#x74B0;&#x5883;&#x306E;&#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x5909;&#x66F4;&#x306F;&#x3001;&#x5909;&#x66F4;&#x4F5C;&#x696D;&#x304C;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x753B;&#x9762;&#x3067;&#x306E;&#x5B9F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x7F6E;&#x304D;&#x63DB;&#x3048;&#x3068;&#x3044;&#x3046;&#x5909;&#x66F4;&#x7B87;&#x6240;&#x304C;&#x5206;&#x304B;&#x308A;&#x3065;&#x3089;&#x304F;&#x3001;&#x307E;&#x305F;&#x5C65;&#x6B74;&#x304C;&#x6B8B;&#x3089;&#x306A;&#x3044;&#x65B9;&#x6CD5;&#x3067;&#x3042;&#x308B;&#x305F;&#x3081;&#x3001;&#x958B;&#x767A;&#x62C5;&#x5F53;&#x4EE5;&#x5916;&#x3067;&#x4F5C;&#x696D;&#x3092;&#x884C;&#x3044;&#x3065;&#x3089;&#x3044;&#x3068;&#x3044;&#x3046;&#x80CC;&#x666F;&#x304C;&#x3042;&#x308B;&#x3002;</p>
+<p>&#x3053;&#x306E;&#x5909;&#x66F4;&#x4F5C;&#x696D;&#x3092;&#x5909;&#x66F4;&#x9805;&#x76EE;&#x304C;&#x5206;&#x304B;&#x308A;&#x3084;&#x3059;&#x304F;&#x3001;&#x307E;&#x305F;&#x4F5C;&#x696D;&#x5C65;&#x6B74;&#x304C;&#x6B8B;&#x308B;&#x3088;&#x3046;GUI&#x5316;&#x3092;&#x884C;&#x3044;&#x3001;&#x540C;&#x4F5C;&#x696D;&#x3092;&#x904B;&#x7528;&#x90E8;&#x9580;&#x306B;&#x79FB;&#x7BA1;&#x3059;&#x308B;&#x3053;&#x3068;&#x306B;&#x3088;&#x308A;&#x3001;&#x958B;&#x767A;&#x62C5;&#x5F53;&#x8005;&#x306E;&#x8CA0;&#x8377;&#x306E;&#x8EFD;&#x6E1B;&#x3092;&#x56F3;&#x308B;&#x3002;</p>
+<h2 class="mume-header" id="%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E6%A7%8B%E6%88%90">&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x69CB;&#x6210;</h2>
+
+<h3 class="mume-header" id="%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E6%A6%82%E5%BF%B5%E5%9B%B3">&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x6982;&#x5FF5;&#x56F3;</h3>
+
+<h3 class="mume-header" id="%E6%A5%AD%E5%8B%99%E3%83%95%E3%83%AD%E3%83%BC">&#x696D;&#x52D9;&#x30D5;&#x30ED;&#x30FC;</h3>
+
+<div class="mermaid">sequenceDiagram
+    participant A as &#x30D7;&#x30E9;&#x30C3;&#x30C8;&#x30D5;&#x30A9;&#x30FC;&#x30E0;&#x5404;&#x958B;&#x767A;
+    participant B as &#x958B;&#x767A;3&#x8AB2;
+    participant C as &#x30CD;&#x30C3;&#x30C8;&#x30EF;&#x30FC;&#x30AF;&#x904B;&#x7528;&#x672C;&#x90E8;
+
+    A-&gt;&gt;B: &#x30D7;&#x30E9;&#x30C3;&#x30C8;&#x30D5;&#x30A9;&#x30FC;&#x30E0;&#x4ED5;&#x69D8;&#x5909;&#x66F4;
+    Note over B: &#x691C;&#x8A3C;
+    loop &#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x8ABF;&#x6574;
+        B--&gt;A: &#x4ED5;&#x69D8;&#x5408;&#x610F;
     end
-    B--&gt;&gt;C: パラメータ変更依頼
-    note over C: 設定変更
-</div></code></code></pre>
-<h3 id="ユースケース図">ユースケース図</h3>
-<pre><code class="language-puml"><code><div>@startuml
+    B--&gt;&gt;C: &#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x5909;&#x66F4;&#x4F9D;&#x983C;
+    note over C: &#x8A2D;&#x5B9A;&#x5909;&#x66F4;
+</div><h3 class="mume-header" id="%E3%83%A6%E3%83%BC%E3%82%B9%E3%82%B1%E3%83%BC%E3%82%B9%E5%9B%B3">&#x30E6;&#x30FC;&#x30B9;&#x30B1;&#x30FC;&#x30B9;&#x56F3;</h3>
+
+<p><!--?xml version="1.0" encoding="UTF-8" standalone="no"?--><svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" contentscripttype="application/ecmascript" contentstyletype="text/css" height="328px" preserveAspectRatio="none" style="width:391px;height:328px;" version="1.1" viewBox="0 0 391 328" width="391px" zoomAndPan="magnify"><defs><filter height="300%" id="f6ku0fy5icsm3" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[43f2e2aa633e12866421e36919a3543c]
+cluster パラメータGUI--><polygon fill="#FFFFFF" filter="url(#f6ku0fy5icsm3)" points="148,14,251.1875,14,258.1875,37.6094,374,37.6094,374,315,148,315,148,14" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="148" x2="258.1875" y1="37.6094" y2="37.6094"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="97.1875" x="152" y="30.5332">&#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;GUI</text><ellipse cx="260.9525" cy="138.7905" fill="#FEFECE" filter="url(#f6ku0fy5icsm3)" rx="96.9525" ry="21.7905" style="stroke:#A80036;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="154" x="183.9525" y="142.519">&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x767B;&#x9332;</text><ellipse cx="261.1463" cy="66.0942" fill="#FEFECE" filter="url(#f6ku0fy5icsm3)" rx="61.6463" ry="15.5942" style="stroke:#A80036;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="70" x="223.1463" y="70.6108">&#x30E6;&#x30FC;&#x30B6;&#x7BA1;&#x7406;</text><ellipse cx="261.2427" cy="213.1485" fill="#FEFECE" filter="url(#f6ku0fy5icsm3)" rx="73.7427" ry="17.1485" style="stroke:#A80036;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="98" x="209.2427" y="217.6651">&#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x53C2;&#x7167;</text><ellipse cx="261.2427" cy="282.1485" fill="#FEFECE" filter="url(#f6ku0fy5icsm3)" rx="73.7427" ry="17.1485" style="stroke:#A80036;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="98" x="209.2427" y="286.6651">&#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x5909;&#x66F4;</text><!--MD5=[770389ab9df153645bc6ef28055eb2b5]
+entity A--><ellipse cx="55" cy="132" fill="#FEFECE" filter="url(#f6ku0fy5icsm3)" rx="8" ry="8" style="stroke:#A80036;stroke-width:1.5;"/><path d="M55,140 L55,167 M42,148 L68,148 M55,167 L42,182 M55,167 L68,182 " fill="none" filter="url(#f6ku0fy5icsm3)" style="stroke:#A80036;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="98" x="6" y="202.0332">&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x7BA1;&#x7406;&#x8005;</text><!--MD5=[b2d39259b6aeabc16b394deeb0238426]
+entity B--><ellipse cx="55" cy="14" fill="#FEFECE" filter="url(#f6ku0fy5icsm3)" rx="8" ry="8" style="stroke:#A80036;stroke-width:1.5;"/><path d="M55,22 L55,49 M42,30 L68,30 M55,49 L42,64 M55,49 L68,64 " fill="none" filter="url(#f6ku0fy5icsm3)" style="stroke:#A80036;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="84" x="13" y="84.0332">&#x30E6;&#x30FC;&#x30B6;&#x7BA1;&#x7406;&#x8005;</text><!--MD5=[16fab723be418f7eaf2ea4bd895a8e51]
+entity C--><ellipse cx="55" cy="250" fill="#FEFECE" filter="url(#f6ku0fy5icsm3)" rx="8" ry="8" style="stroke:#A80036;stroke-width:1.5;"/><path d="M55,258 L55,285 M42,266 L68,266 M55,285 L42,300 M55,285 L68,300 " fill="none" filter="url(#f6ku0fy5icsm3)" style="stroke:#A80036;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="42" x="34" y="320.0332">&#x5229;&#x7528;&#x8005;</text><!--MD5=[f2c4376d6c9abc5326fb0e6aa7c208f8]
+link A to uc01--><path d="M104.09,158.11 C123.8,155.69 147.28,152.81 169.96,150.03 " fill="none" id="A-to-uc01" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="175.09,149.41,165.6746,146.5204,170.1262,150.0108,166.6359,154.4625,175.09,149.41" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[429aef0943d50baa192ad112174612e1]
+link A to uc02--><path d="M103.14,122.41 C114.64,113.76 127.3,105.35 140,99 C160.49,88.76 184.58,81.34 205.79,76.17 " fill="none" id="A-to-uc02" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="210.83,74.96,201.1492,73.1482,205.9654,76.1155,202.9981,80.9317,210.83,74.96" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[66925a094f955db17ae00aed73f84533]
+link A to uc03--><path d="M104.09,175.55 C134.16,182.77 173.02,192.11 204.42,199.65 " fill="none" id="A-to-uc03" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="209.39,200.84,201.5747,194.8466,204.5286,199.671,199.7042,202.6249,209.39,200.84" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[49b1728798f4c33f3689b0f47c92310c]
+link A to uc04--><path d="M90.24,205.6 C104.31,220.47 121.62,236.19 140,247 C157.68,257.39 178.65,264.88 198.08,270.2 " fill="none" id="A-to-uc04" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="202.99,271.5,195.3223,265.3189,198.1584,270.2135,193.2638,273.0496,202.99,271.5" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[1ba361cce4208ad14969c8c810b291aa]
+link B to uc02--><path d="M97.28,50.05 C126.24,52.89 165.45,56.73 198.13,59.93 " fill="none" id="B-to-uc02" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="203.32,60.44,194.7503,55.5862,198.3436,59.9552,193.9746,63.5485,203.32,60.44" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[f8d33d796b3bd009a06117eda6d6ddb3]
+link C to uc03--><path d="M76.11,272.83 C92.96,265.33 117.77,254.75 140,247 C161.3,239.58 185.12,232.57 205.9,226.86 " fill="none" id="C-to-uc03" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="210.84,225.51,201.1054,224.0141,206.0155,226.8232,203.2065,231.7333,210.84,225.51" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[a7d32207e111cc60cc2bb8049535e0b3]
+link C to uc04--><path d="M76.31,282 C100.9,282 143.78,282 181.93,282 " fill="none" id="C-to-uc04" style="stroke:#A80036;stroke-width:1.0;"/><polygon fill="#A80036" points="187.04,282,178.04,278,182.04,282,178.04,286,187.04,282" style="stroke:#A80036;stroke-width:1.0;"/><!--MD5=[e3c480065f99cb51d679f92f49450bf1]
+@startuml
 left to right direction
 actor システム管理者 as A
 actor ユーザ管理者 as B
 actor 利用者 as C
 package パラメータGUI {
-    usecase &quot;スクリプトファイル登録&quot; as uc01
-    usecase &quot;ユーザ管理&quot; as uc02
-    usecase &quot;パラメータ参照&quot; as uc03
-    usecase &quot;パラメータ変更&quot; as uc04
+    usecase "スクリプトファイル登録" as uc01
+    usecase "ユーザ管理" as uc02
+    usecase "パラメータ参照" as uc03
+    usecase "パラメータ変更" as uc04
 }
-A --&gt; uc01
-A --&gt; uc02
-A --&gt; uc03
-A --&gt; uc04
-B --&gt; uc02
-C --&gt; uc03
-C --&gt; uc04
+A - -> uc01
+A - -> uc02
+A - -> uc03
+A - -> uc04
+B - -> uc02
+C - -> uc03
+C - -> uc04
 @enduml
-</div></code></code></pre>
-<h2 id="機能要件">機能要件</h2>
-<h3 id="機能一覧">機能一覧</h3>
-<h2 id="入出力要件">入出力要件</h2>
-<h3 id="入力データ一覧">入力データ一覧</h3>
-<h3 id="出力データ一覧">出力データ一覧</h3>
-<h2 id="非機能要件">非機能要件</h2>
-<h3 id="セキュリティ要件">セキュリティ要件</h3>
-<h3 id="品質性能要件">品質・性能要件</h3>
 
-    </body>
-    </html>
+PlantUML version 1.2020.26(Tue Dec 22 02:45:07 JST 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: ja
+Country: JP
+--></g></svg></p><h2 class="mume-header" id="%E6%A9%9F%E8%83%BD%E8%A6%81%E4%BB%B6">&#x6A5F;&#x80FD;&#x8981;&#x4EF6;</h2>
+
+<h3 class="mume-header" id="%E6%A9%9F%E8%83%BD%E4%B8%80%E8%A6%A7">&#x6A5F;&#x80FD;&#x4E00;&#x89A7;</h3>
+
+<h2 class="mume-header" id="%E5%85%A5%E5%87%BA%E5%8A%9B%E8%A6%81%E4%BB%B6">&#x5165;&#x51FA;&#x529B;&#x8981;&#x4EF6;</h2>
+
+<h3 class="mume-header" id="%E5%85%A5%E5%8A%9B%E3%83%87%E3%83%BC%E3%82%BF%E4%B8%80%E8%A6%A7">&#x5165;&#x529B;&#x30C7;&#x30FC;&#x30BF;&#x4E00;&#x89A7;</h3>
+
+<h3 class="mume-header" id="%E5%87%BA%E5%8A%9B%E3%83%87%E3%83%BC%E3%82%BF%E4%B8%80%E8%A6%A7">&#x51FA;&#x529B;&#x30C7;&#x30FC;&#x30BF;&#x4E00;&#x89A7;</h3>
+
+<h2 class="mume-header" id="%E9%9D%9E%E6%A9%9F%E8%83%BD%E8%A6%81%E4%BB%B6">&#x975E;&#x6A5F;&#x80FD;&#x8981;&#x4EF6;</h2>
+
+<h3 class="mume-header" id="%E3%82%BB%E3%82%AD%E3%83%A5%E3%83%AA%E3%83%86%E3%82%A3%E8%A6%81%E4%BB%B6">&#x30BB;&#x30AD;&#x30E5;&#x30EA;&#x30C6;&#x30A3;&#x8981;&#x4EF6;</h3>
+
+<h3 class="mume-header" id="%E5%93%81%E8%B3%AA%E6%80%A7%E8%83%BD%E8%A6%81%E4%BB%B6">&#x54C1;&#x8CEA;&#x30FB;&#x6027;&#x80FD;&#x8981;&#x4EF6;</h3>
+
+
+      </div>
+      
+      
+    
+    
+    <script>
+// config mermaid init call
+// http://knsv.github.io/mermaid/#configuration
+//
+// You can edit the 'MERMAID_CONFIG' variable below.
+MERMAID_CONFIG = {
+  startOnLoad: false
+}
+
+if (window['MERMAID_CONFIG']) {
+  window['MERMAID_CONFIG'].startOnLoad = false
+  window['MERMAID_CONFIG'].cloneCssStyles = false
+  window['MERMAID_CONFIG'].theme = "default"
+}
+mermaid.initialize(window['MERMAID_CONFIG'] || {})
+if (typeof(window['Reveal']) !== 'undefined') {
+  function mermaidRevealHelper(event) {
+    var currentSlide = event.currentSlide
+    var diagrams = currentSlide.querySelectorAll('.mermaid')
+    for (var i = 0; i < diagrams.length; i++) {
+      var diagram = diagrams[i]
+      if (!diagram.hasAttribute('data-processed')) {
+        mermaid.init(null, diagram, ()=> {
+          Reveal.slide(event.indexh, event.indexv)
+        })
+      }
+    }
+  }
+  Reveal.addEventListener('slidechanged', mermaidRevealHelper)
+  Reveal.addEventListener('ready', mermaidRevealHelper)
+} else {
+  mermaid.init(null, document.getElementsByClassName('mermaid'))
+}
+</script>
+    
+    
+    
+    
+    
+  
+    </body></html>
