@@ -1,5 +1,7 @@
-
-# 基本設計書
+---
+title: 基本設計書
+output: word_document
+---
 
 ## システム概要
 
